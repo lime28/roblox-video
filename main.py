@@ -16,14 +16,14 @@ def get_youtube_video_url(youtube_url):
     
     return stream.url
 
-def extract_rgb_data(youtube_url):
+def extract_rgb_data(youtube_url,frames):
 
     video_url = get_youtube_video_url(youtube_url)
     cap = cv2.VideoCapture(video_url)
 
     frames_rgb_data = []
 
-    while cap.isOpened() and len(frames_rgb_data) < 256*144*3 * 1:
+    while cap.isOpened() and len(frames_rgb_data) < 256*144*3 * frames:
         ret, frame = cap.read()
         if not ret:
             break
@@ -47,8 +47,9 @@ def get_rgb_data():
         return jsonify({'error': 'Invalid JSON body'}), 400
     
     video_url = request.json['video_url']
+    frames = request.json['frames']
 
-    return extract_rgb_data(video_url)
+    return extract_rgb_data(video_url,frames)
 
 @app.route('/')
 def index():
