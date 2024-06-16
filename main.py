@@ -18,15 +18,13 @@ def time_ago(dt):
 
     seconds = delta.total_seconds()
 
-    # Define time intervals in seconds
     minute = 60
     hour = 60 * minute
     day = 24 * hour
     week = 7 * day
-    month = 30 * day  # Approximation, as months can have different lengths
-    year = 365 * day  # Approximation, as years can have leap years
+    month = 30 * day
+    year = 365 * day
 
-    # Determine the appropriate time unit and amount
     if seconds < minute:
         seconds_ago = int(seconds)
         return f"{seconds_ago} second{'s' if seconds_ago != 1 else ''} ago"
@@ -85,16 +83,11 @@ def extract_rgb_data(video_url, startFrame, frames, getMeta):
         if not ret:
             break
 
-
-        resize_frame = cv2.resize(frame, (128, 72), interpolation=cv2.INTER_LANCZOS4)
-
-        rgb_frame = cv2.cvtColor(resize_frame, cv2.COLOR_BGR2RGBA)
-
+        resize_frame = cv2.resize(frame, (64, 36), interpolation=cv2.INTER_LANCZOS4)
+        rgb_frame = cv2.cvtColor(resize_frame, cv2.COLOR_BGR2RGB)
         flattened = rgb_frame.flatten().tolist()
-
-        adjusted = np.round(np.array(flattened) / 255.0, 3).tolist()
-
-        frames_rgb_data.append(adjusted)
+        # adjusted = np.round(np.array(flattened) / 255.0, 3).tolist()
+        frames_rgb_data.append(flattened)
 
     cap.release()
 
