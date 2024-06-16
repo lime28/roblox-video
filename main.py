@@ -4,6 +4,7 @@ import cv2
 from pytube import YouTube
 import numpy as np
 import json
+import logging
 
 app = Flask(__name__)
 
@@ -16,37 +17,21 @@ streams = {}
 def time_ago(dt):
     now = datetime.now()
     delta = now - dt
-
     seconds = delta.total_seconds()
-
-    minute = 60
-    hour = 60 * minute
-    day = 24 * hour
-    week = 7 * day
-    month = 30 * day
-    year = 365 * day
-
-    if seconds < minute:
-        seconds_ago = int(seconds)
-        return f"{seconds_ago} second{'s' if seconds_ago != 1 else ''} ago"
-    elif seconds < hour:
-        minutes = int(seconds // minute)
-        return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
-    elif seconds < day:
-        hours = int(seconds // hour)
-        return f"{hours} hour{'s' if hours != 1 else ''} ago"
-    elif seconds < week:
-        days = int(seconds // day)
-        return f"{days} day{'s' if days != 1 else ''} ago"
-    elif seconds < month:
-        weeks = int(seconds // week)
-        return f"{weeks} week{'s' if weeks != 1 else ''} ago"
-    elif seconds < year:
-        months = int(seconds // month)
-        return f"{months} month{'s' if months != 1 else ''} ago"
-    else:
-        years = int(seconds // year)
-        return f"{years} year{'s' if years != 1 else ''} ago"
+    intervals = (
+        ('year', 31536000),  # 60 * 60 * 24 * 365
+        ('month', 2592000),  # 60 * 60 * 24 * 30
+        ('week', 604800),    # 60 * 60 * 24 * 7
+        ('day', 86400),      # 60 * 60 * 24
+        ('hour', 3600),      # 60 * 60
+        ('minute', 60),
+        ('second', 1),
+    )
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            return f"{int(value)} {name}{'s' if value > 1 else ''} ago"
+    return "just now"
     
 def get_stream_url(youtube_url):
     if streams.get(youtube_url):
@@ -117,4 +102,5 @@ def index():
     return 'Hello, World!'
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     app.run(debug=True, host="0.0.0.0", port=8080)
